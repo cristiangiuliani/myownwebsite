@@ -1,25 +1,29 @@
 <template lang="html">
-	<div class="composer container">
-		Sono Il Composer
-		<div class="available">
-			<h2>Available</h2>
-			<transition-group name="skills" enter-active-class="bounceIn" leave-active-class="bounceOut">
-				<button v-for="skill in skills" :key="skill.id" @click="toggleSkill(skill.id,'add')">{{ skill.desc }}</button>
-			</transition-group>
+	<section class="composer section">
+		<div class="container content is-medium has-text-centered">
+			<h1>Profile Composer</h1>
+			<div class="available">
+				<h2>Available Skills</h2>
+				<transition-group name="skills" enter-active-class="bounceIn" leave-active-class="bounceOut">
+					<button :class="'button is-primary '+skill.profiles.join(' ')" v-for="skill in skills" :key="skill.id" @click="toggleSkill(skill.id,'add')">{{ skill.desc }}</button>
+				</transition-group>
+			</div>
+			<div class="selected">
+				<h2>Selected Skills</h2>
+				<transition-group name="selected" enter-active-class="bounceIn" leave-active-class="bounceOut">
+					<button class="button is-info" v-for="select in selected" :key="select.id" @click="toggleSkill(select.id,'remove')" >{{ select.desc }}</button>
+				</transition-group>
+			</div>
+			<div class="profiler">
+				<h2>Profile</h2>
+				<ul>
+					<transition-group name="matches" enter-active-class="bounceIn" leave-active-class="bounceOut">
+						<li v-for="match in matches"  :key="match.id"  >{{ match.desc }}</li>
+					</transition-group>
+				</ul>
+			</div>
 		</div>
-		<div class="selected">
-			<h2>Selected</h2>
-			<transition-group name="selected" enter-active-class="bounceIn" leave-active-class="bounceOut">
-				<button v-for="select in selected" :key="select.id" @click="toggleSkill(select.id,'remove')" >{{ select.desc }}</button>
-			</transition-group>
-		</div>
-		<div class="profiler">
-			<h2>You Got</h2>
-			<transition-group name="matches" enter-active-class="bounceIn" leave-active-class="bounceOut">
-				<div v-for="match in matches"  :key="match.id"  >{{ match.desc }}</div>
-			</transition-group>
-		</div>
-	</div>
+	</section>
 </template>
 
 <script>
@@ -27,7 +31,7 @@
 		name: 'Composer',
 		methods:{
 			toggleSkill(id,action){
-				var selected = {},
+				let selected = {},
 					objClicked = {},
 					objSelected = {};
 
@@ -43,7 +47,7 @@
 				this.getProfiles();
 			},
 			getProfiles(){
-				var objProfile = this.profile,
+				let objProfile = this.profile,
 					arrMatches = [],
 					objMatches = this.matches,
 					objItem = {},
@@ -61,27 +65,12 @@
 					objCheck = objMatches.find(function (objCheck) { return objCheck.id === profile.id; });
 					indexCheck = objMatches.findIndex(function (indexCheck) { return indexCheck.id === profile.id; });
 					if(arrMatches.includes(profile.id)){
-						console.log('in arrMatch: '+profile.id);
-						if (typeof objCheck === 'undefined'){
-							objMatches.push(profile);
-							console.log('ADD: '+profile.id);
-						}
+						if (typeof objCheck === 'undefined') objMatches.push(profile);
 					}else{
-						if (typeof objCheck !== 'undefined'){
-							objMatches.splice(indexCheck,1);
-							console.log('DEL: '+profile.id);
-						}
+						if (typeof objCheck !== 'undefined') objMatches.splice(indexCheck,1);
 					}
 				});
-				console.log(objMatches);
-				/*arrMatches.forEach(function(match, index, obj){
-					objItem = objProfile.find(function (objItem) { return objItem.id === match; });
-					objCheck = objMatches.find(function (objCheck) { return objCheck.id === match; });
-					if(typeof objCheck === 'undefined'){
-						objMatches.push(objItem);
-					}
 
-				});*/
 
 			}
 		},

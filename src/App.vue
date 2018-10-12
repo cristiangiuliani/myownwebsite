@@ -1,12 +1,14 @@
 <template>
   <div id="app">
-
+	  <font-awesome-icon icon="coffee" />
 	<Composer></Composer>
+	<Contacts></Contacts>
   </div>
 </template>
 
 <script>
 import Composer from './components/Composer.vue';
+import Contacts from './components/Contacts.vue';
 export default {
   name: 'app',
   data () {
@@ -15,12 +17,13 @@ export default {
     }
   },
   components:{
-	  Composer
+	  Composer,
+	  Contacts
   }
 }
 </script>
 
 <style lang="scss">
-@import "~bootstrap/scss/bootstrap";
+@import "~bulma/bulma.sass";
 @import 'scss/main.scss';
 </style>
