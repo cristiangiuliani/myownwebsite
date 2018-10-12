@@ -5,13 +5,13 @@
 			<div class="available">
 				<h2>Available Skills</h2>
 				<transition-group name="skills" enter-active-class="bounceIn" leave-active-class="bounceOut">
-					<button :class="'button is-primary '+skill.profiles.join(' ')" v-for="skill in skills" :key="skill.id" @click="toggleSkill(skill.id,'add')">{{ skill.desc }}</button>
+					<button :class="'button is-primary  is-rounded '+skill.profiles.join(' ')" v-for="skill in skills" :key="skill.id" @click="toggleSkill(skill.id,'add')">{{ skill.desc }}</button>
 				</transition-group>
 			</div>
 			<div class="selected">
 				<h2>Selected Skills</h2>
 				<transition-group name="selected" enter-active-class="bounceIn" leave-active-class="bounceOut">
-					<button class="button is-info" v-for="select in selected" :key="select.id" @click="toggleSkill(select.id,'remove')" >{{ select.desc }}</button>
+					<button class="button is-info  is-rounded" v-for="select in selected" :key="select.id" @click="toggleSkill(select.id,'remove')" >{{ select.desc }}</button>
 				</transition-group>
 			</div>
 			<div class="profiler">
