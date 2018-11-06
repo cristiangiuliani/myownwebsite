@@ -1,14 +1,23 @@
 body{
-	
+
 }
 .main{
-	background: rgb(165,212,142);
-background: linear-gradient(153deg, rgba(165,212,142,1) 0%, rgba(255,236,160,1) 50%, rgba(255,188,248,1) 100%);
+	/*background: rgb(165,212,142);
+background: linear-gradient(153deg, rgba(165,212,142,1) 0%, rgba(255,236,160,1) 50%, rgba(255,188,248,1) 100%);*/
 	height: 100vh;
 }
 
 .composer{
 	.button{
 		margin: 4px;
+	}
+}
+
+.contacts{
+	.is-danger{
+		input,
+		textarea{
+			border-color:red;
+		}
 	}
 }

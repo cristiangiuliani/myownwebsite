@@ -4,21 +4,21 @@
 			<h1>Profile Composer</h1>
 			<div class="available">
 				<h2>Available Skills</h2>
-				<transition-group name="skills" enter-active-class="bounceIn" leave-active-class="bounceOut">
-					<button :class="'button is-primary  is-rounded '+skill.profiles.join(' ')" v-for="skill in skills" :key="skill.id" @click="toggleSkill(skill.id,'add')">{{ skill.desc }}</button>
+				<transition-group name="available" enter-active-class="bounceIn" leave-active-class="bounceOut">
+					<button :class="'button is-primary  is-rounded '+skill.profiles.join(' ')" v-for="skill in available"  :key="skill.id" @click="toggleSkill" v-bind:data-skill="skill.id">{{ skill.desc }}</button>
 				</transition-group>
 			</div>
 			<div class="selected">
 				<h2>Selected Skills</h2>
 				<transition-group name="selected" enter-active-class="bounceIn" leave-active-class="bounceOut">
-					<button class="button is-info  is-rounded" v-for="select in selected" :key="select.id" @click="toggleSkill(select.id,'remove')" >{{ select.desc }}</button>
+					<button class="button is-info  is-rounded" v-for="select in selected" :key="select.id"  @click="toggleSkill" v-bind:data-skill="select.id" >{{ select.desc }}</button>
 				</transition-group>
 			</div>
 			<div class="profiler">
 				<h2>Profile</h2>
 				<ul>
 					<transition-group name="matches" enter-active-class="bounceIn" leave-active-class="bounceOut">
-						<li v-for="match in matches"  :key="match.id"  >{{ match.desc }}</li>
+						<li v-for="match in matches"  :key="match.id" v-if="match.selected" >{{ match.desc }}</li>
 					</transition-group>
 				</ul>
 			</div>
@@ -27,79 +27,79 @@
 </template>
 
 <script>
+
 	export default {
 		name: 'Composer',
 		methods:{
-			toggleSkill(id,action){
-				let selected = {},
-					objClicked = {},
-					objSelected = {};
+			toggleSkill(event){
+				let id = event.target.dataset.skill,
+					availableObj = this.available.filter(skill => skill.id==id),
+					selectedObj = this.selected.filter(skill => skill.id==id),
+					skillsObj = this.skills,
+					matchesObj = this.matches,
+					delProfiles = [];
 
-				objClicked = action == 'add' ? this.skills : this.selected
-				objSelected = action == 'add' ? this.selected : this.skills
-				objClicked.forEach(function(skill, index, obj){
-					if(skill.id == id){
-						obj.splice(index,1);
-						selected = skill;
-					}
+				let flag = availableObj.length == 0 ? 'selected' : 'available';
+				let currentObj = flag == 'selected' ? selectedObj[0] : availableObj[0];
+
+				currentObj.selected = currentObj.selected ? false : true;
+
+				currentObj.profiles.forEach(function(profile){
+					let matchProfile = matchesObj.filter(item => item.id==profile);
+					if(flag == 'available' && !matchProfile[0].selected) matchProfile[0].selected = true;
+
+					if(flag == 'selected' && matchProfile[0].selected) delProfiles.push(profile);
 				});
-				objSelected.push(selected);
-				this.getProfiles();
-			},
-			getProfiles(){
-				let objProfile = this.profile,
-					arrMatches = [],
-					objMatches = this.matches,
-					objItem = {},
-					objCheck = {},
-					indexCheck = -1;
-				this.selected.forEach(function(skill, index, obj){
-					skill.profiles.forEach(function(profile, k, p){
-						if(!arrMatches.includes(profile)) {
-							arrMatches.push(profile)
+
+				if(delProfiles.length > 0){
+					this.selected.filter(item => item.selected).forEach(function(skill){
+						if(currentObj.id != skill.id){
+							delProfiles.forEach(function(item){
+								if(skill.profiles.filter(check => check == item).length > 0){
+									delProfiles.splice(delProfiles.indexOf(item),1);
+								}
+							});
 						}
 					});
-				});
+				}
 
-				this.profile.forEach(function(profile, index, obj){
-					objCheck = objMatches.find(function (objCheck) { return objCheck.id === profile.id; });
-					indexCheck = objMatches.findIndex(function (indexCheck) { return indexCheck.id === profile.id; });
-					if(arrMatches.includes(profile.id)){
-						if (typeof objCheck === 'undefined') objMatches.push(profile);
-					}else{
-						if (typeof objCheck !== 'undefined') objMatches.splice(indexCheck,1);
+				delProfiles.forEach(function(profile){
+					let checkObj = matchesObj.filter(item => item.id==profile);
+					if(checkObj.length > 0){
+						checkObj[0].selected = false;
 					}
 				});
-
 
 			}
 		},
 		data(){
 			return{
-				selected: [],
-				matches: [],
 				legend: [	'only knowledge',
 							'knowledge and exercises',
 							'used in few real projects',
 							'used in many real project',
 							'teacher of this'
 						],
-				profile: [
+				profiles: [
 					{
 						id: 'fe-dev',
-						desc: 'Front End Developer'
+						desc: 'Front End Developer',
+						selected:false
 					},
 					{
 						id: 'be-dev',
-						desc: 'Back End Developer'
+						desc: 'Back End Developer',
+						selected:false
 					},
 					{
 						id: 'web-design',
-						desc: 'Web Designer'
+						desc: 'Web Designer',
+						selected:false
 					},
 					{
 						id: 'ux-ui',
-						desc: 'UX/UI Designer'
+						desc: 'UX/UI Designer',
+						selected:false
 					}
 				],
 				skills: [
@@ -107,69 +107,106 @@
 						id: 'html',
 						desc: 'HTML 5',
 						level: 5,
-						profiles: ['web-design']
+						profiles: ['web-design'],
+						selected: false
 					},
 					{
 						id: 'css',
 						desc: 'CSS 3',
 						level: 5,
-						profiles: ['web-design']
+						profiles: ['web-design'],
+						selected: false
 					},
 					{
 						id: 'ps',
 						desc: 'Adobe Photoshop',
 						level: 5,
-						profiles: ['web-design','ux-ui']
+						profiles: ['web-design','ux-ui'],
+						selected: false
 					},
 					{
 						id: 'sketch',
 						desc: 'Sketch',
 						level: 4,
-						profiles: ['ux-ui']
+						profiles: ['ux-ui'],
+						selected: false
 					},
 					{
 						id: 'scss',
 						desc: 'SCSS/SASS',
 						level: 5,
-						profiles: ['fe-dev']
+						profiles: ['fe-dev'],
+						selected: false
 					},
 					{
 						id: 'less',
 						desc: 'LESS',
 						level: 5,
-						profiles: ['fe-dev']
+						profiles: ['fe-dev'],
+						selected: false
 					},
 					{
 						id: 'js',
 						desc: 'Javascript',
 						level: 5,
-						profiles: ['fe-dev']
+						profiles: ['fe-dev'],
+						selected: false
 					},
 					{
 						id: 'vue',
 						desc: 'Vue.js',
 						level: 3,
-						profiles: ['fe-dev']
+						profiles: ['fe-dev'],
+						selected: false
 					},
 					{
 						id: 'node',
 						desc: 'NODE.js',
 						level: 2,
-						profiles: ['fe-dev', 'be-dev']
+						profiles: ['fe-dev', 'be-dev'],
+						selected: false
 					},
 					{
 						id: 'php',
 						desc: 'PHP',
 						level: 4,
-						profiles: ['be-dev']
+						profiles: ['be-dev'],
+						selected: false
 					},
 					{
 						id: 'sql',
 						desc: 'SQL',
 						level: 4,
-						profiles: ['be-dev']
+						profiles: ['be-dev'],
+						selected: false
 					}
 				]
+			}
+		},
+		computed:{
+			selected: {
+				get: function(){
+					return this.skills.filter(skill => skill.selected);
+				},
+				set: function(value){
+					this.skills.filter(skill => skill.id==this.id).selected = value;
+				},
+			},
+			available: {
+				set: function(value){
+					this.skills.filter(skill => skill.id==this.id).selected = value;
+				},
+				get: function(){
+					return this.skills.filter(skill => !skill.selected);
+				}
+			},
+			matches: {
+				set: function(value){
+					this.profiles.filter(profile => profile.id==this.id).selected = value;
+				},
+				get: function(){
+					return this.profiles;
+				}
 			}
 		}
 	}
